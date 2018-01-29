@@ -1,0 +1,29 @@
+{
+  "name": "bamazon_db",
+  "version": "1.0.0",
+  "description": "Database homework",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayblack388/bamazon_db.git"
+  },
+  "keywords": [
+    "bamazon",
+    "bootcamp",
+    "homework"
+  ],
+  "author": "John Blackwell <jblackwell072588@gmail.com> (jayblack388@github.io)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jayblack388/bamazon_db/issues"
+  },
+  "homepage": "https://github.com/jayblack388/bamazon_db#readme",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "inquirer": "^5.0.1",
+    "mysql": "^2.15.0"
+  }
+}
