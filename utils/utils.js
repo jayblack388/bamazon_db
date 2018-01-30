@@ -1,18 +1,7 @@
-const Product = require("./products");
+const Product = require("../classes/products");
 const inquirer = require("inquirer");
-require('dotenv').config();
-const keys = require("./keys");
 const mysql = require("mysql");
-const pw = keys.password.pw;
-
-
-let con = mysql.createConnection({
-	host: "localhost",
-	port: 3306,
-	user: "root",
-	password: pw,
-	database: "bamazon"
-});
+const dbInsert = require("./db-utils");
 
 const generateUUID = () => { // Public Domain/MIT
     var d = new Date().getTime();
@@ -24,24 +13,12 @@ const generateUUID = () => { // Public Domain/MIT
         d = Math.floor(d / 16);
         return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
-}
-const dbInsert = (arr) =>{
-    con.connect((err)=> {
-      if (err) throw err;
-      console.log("Connected!");
-      let sql = "INSERT INTO products (item_id, product_name, department_name, price, cost, stock_quantity, sale) VALUES ?";
-      con.query(sql, [arr], function (err, result) {
-        if (err) throw err;
-        console.log("Number of records inserted: " + result.affectedRows);
-        con.end();
-      });
-    });
-  };
+};
 
-
-let values = [];
-let count;
-let userIn;
+//========================Variables for DB==============================//
+    let values = [];
+    let count;
+    let userIn;
 
 const createProduct = () => {
     if (count < userIn) {
@@ -94,6 +71,7 @@ const createProduct = () => {
             arr.push(newProduct.id, newProduct.name, newProduct.depName, newProduct.price, newProduct.cost, newProduct.quantity, newProduct.sale);
             values.push(arr);
             count++;
+            console.log("======================");
             createProduct();
         });
     }
@@ -117,11 +95,10 @@ const seedDB = () => {
 }
 
 //========================Test==============================//
-// userIn = 4;
-// let x = parseInt(userIn);
+
 // createProduct();
-seedDB();
+//seedDB();
 
 
 
-module.exports = generateUUID;
+module.exports = {generateUUID, createProduct, seedDB}

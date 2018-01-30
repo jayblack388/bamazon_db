@@ -1,5 +1,6 @@
 class Product {
     constructor(name, depName, price, cost, quantity) {
+        this._id;
         this._name = name;
         this._depName = depName;
         this._price = price;
@@ -7,6 +8,26 @@ class Product {
         this.quantity = quantity;
         this._sale = false;
         this.saleRate;
+    }
+    set price(newPrice) {
+        if (typeof newPrice === 'number'){
+          this._price = newPrice;
+        } else{
+          console.log('Invalid input: price must be set to a Number.')
+        }
+    }
+    set cost(newCost) {
+        if (typeof newCost === 'number'){
+          this._cost = newCost
+        } else{
+          console.log('Invalid input: cost must be set to a Number.')
+        }
+    }
+    set id(newId) {
+        this._id = newId;   
+    }
+    get id() {
+        return this._id;
     }
     get name() {
         return this._name;
@@ -22,20 +43,6 @@ class Product {
     }
     get sale() {
         return this._sale;
-    }
-    set price(price) {
-        if (typeof price === 'number'){
-          this._price = price
-        } else{
-          console.log('Invalid input:price must be set to a Number.')
-        }
-    }
-    set cost(cost) {
-        if (typeof cost === 'number'){
-          this._cost = cost
-        } else{
-          console.log('Invalid input:cost must be set to a Number.')
-        }
     }
     getMargin() {
         return (this.price - this.cost)
