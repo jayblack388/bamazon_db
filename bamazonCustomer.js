@@ -1,14 +1,14 @@
 const {con, createElementDB, readElementByName, readElementById, readAllElementsDB, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase} = require("./utils");
 const inquirer = require("inquirer");
 let choiceArray = [
-    "Read Whole Database", 
+    "See All Products for Sale", 
     "Search by Id", 
     "Search by Name", 
     "Make Purchase"
 ]
 // testConnect();
-const customerProg = () => {
-    console.log("Welcome to Bamazon");
+const customerProg = (userId) => {
+    console.log(`Welcome to Bamazon ${userId}`);
     inquirer.prompt([{
             type: "list",
             name: "command",
@@ -16,8 +16,8 @@ const customerProg = () => {
             choices: choiceArray
     }]).then((input) => {
         switch (input.command) {
-            case "Read Whole Database":
-                readAllElementsDB(customerProg);
+            case "See All Products for Sale":
+                readAllElementsDB();
                 break;
             case "Search by Id":
                 askQuery(readElementById);
@@ -33,22 +33,6 @@ const customerProg = () => {
         };
     })
 }
-customerProg();
+// customerProg();
 
-
-/*     {
-        type: "input",
-        name: "quantity",
-        message: "How many would you like to buy?",
-        validate: ""
-    } 
-    readAllElementsDB();
-    inquirer.prompt([{
-        type: "input",
-        name: "prodSearch",
-        message: "What products would you like to search?"
-    }]).then((res)=>{
-        readElementByName(res.prodSearch);
-    })
-}
-*/
+module.exports = customerProg
