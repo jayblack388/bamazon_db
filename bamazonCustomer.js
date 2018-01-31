@@ -1,27 +1,54 @@
-const {con, testConnect, dbReadAll, dbDisplayAll} = require("./utils/db-utils");
+const {con, createElementDB, readElementByName, readElementById, readAllElementsDB, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase} = require("./utils");
 const inquirer = require("inquirer");
-
+let choiceArray = [
+    "Read Whole Database", 
+    "Search by Id", 
+    "Search by Name", 
+    "Make Purchase"
+]
 // testConnect();
 const customerProg = () => {
-    
+    console.log("Welcome to Bamazon");
     inquirer.prompt([{
-        type: "input",
-        name: "prodSearch",
-        message: "What products would you like to search?"
-    },{
+            type: "list",
+            name: "command",
+            message: "What command do you want to use?",
+            choices: choiceArray
+    }]).then((input) => {
+        switch (input.command) {
+            case "Read Whole Database":
+                readAllElementsDB(customerProg);
+                break;
+            case "Search by Id":
+                askQuery(readElementById);
+                break;
+            case "Search by Name":
+                askQuery(readElementByName);
+                break;
+            case "Make Purchase":
+                makePurchase();
+                break;
+            default:
+                console.log("Invalid Request");
+        };
+    })
+}
+customerProg();
+
+
+/*     {
         type: "input",
         name: "quantity",
         message: "How many would you like to buy?",
         validate: ""
+    } 
+    readAllElementsDB();
+    inquirer.prompt([{
+        type: "input",
+        name: "prodSearch",
+        message: "What products would you like to search?"
     }]).then((res)=>{
-        con.query("SELECT * FROM products WHERE product_name = ?", [res.prodSearch] , (err, res) => {
-            if (err) throw err;
-            let newProd = new Product(res[i].product_name, res[i].department_name, res[i].price, res[i].cost, res[i].stock_quantity);
-            con.end();
-            console.log(products)
-        })
+        readElementByName(res.prodSearch);
     })
 }
-const products = [];
-dbDisplayAll();
-// customerProg();
+*/
