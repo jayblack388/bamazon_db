@@ -9,7 +9,5 @@ CREATE TABLE products (
     price DECIMAL(8,2) NOT NULL,
     cost DECIMAL(8,2) NOT NULL,
     stock_quantity INTEGER(10) NOT NULL,
-    sale BOOLEAN,
-    saleRate DECIMAL (2,2),
 		PRIMARY KEY (item_id)
 );
