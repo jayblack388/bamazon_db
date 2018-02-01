@@ -4,6 +4,7 @@ const inquirer = require("inquirer");
 const mysql = require("mysql");
 const keys = require("./keys");
 const pw = keys.password.pw;
+const fs = require("fs");
 
 //========================Server Variables==============================//
     let values = [];
@@ -73,6 +74,23 @@ const pw = keys.password.pw;
         return newProd;
     }
 
+    const seedDB = () => {
+        fs.readFile("seeds.csv", "utf8", (err, data)=>{
+            if (err) throw err;
+            let dataArr = data.split(",");
+            console.log(dataArr);
+            let l = dataArr.length
+            console.log(l);
+            let newArr = [];
+            
+            for (let i = 0; i < l; i += 5) {
+                let newProd = new Product(dataArr[i+0], dataArr[i+1], dataArr[i+2], dataArr[i+3], dataArr[i+4])
+                newProd.id = generateUUID();
+                newArr.push(newProd);
+            }
+            createElementDB(newArr);
+        })
+    }
 //========================CRUD==============================//
 
     const createElementDB = (valueArr,  optCallback = 0) => {
@@ -324,7 +342,7 @@ const pw = keys.password.pw;
         }
     };
 
-    const seedDB = () => {
+    const createMultipleProducts = () => {
         inquirer.prompt([{
             type: "list",
             message: "How Many products Do you want to create?",
@@ -537,8 +555,8 @@ const pw = keys.password.pw;
 
 
 // createProduct();
-// seedDB();
+// createMultipleProducts();
 
 module.exports = {
-    con, createElementDB, readElementByName, readElementById, readAllElementsDB, readAllElementsDBMan, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase, readElementByStock, refillInventory
+    con, createElementDB, readElementByName, readElementById, readAllElementsDB, readAllElementsDBMan, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, createMultipleProducts, askQuery, makePurchase, readElementByStock, refillInventory
 }

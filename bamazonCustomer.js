@@ -1,4 +1,4 @@
-const {con, createElementDB, readElementByName, readElementById, readAllElementsDB, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase} = require("./utils");
+const {con, createElementDB, readElementByName, readElementById, readAllElementsDB, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, createMultipleProducts, askQuery, makePurchase} = require("./utils");
 const inquirer = require("inquirer");
 let choiceArray = [
     "See All Products for Sale", 

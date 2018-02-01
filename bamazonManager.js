@@ -1,4 +1,4 @@
-const {con, createElementDB, readElementByName, readElementById, readAllElementsDBMan, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase, readElementByStock, refillInventory} = require("./utils");
+const {con, createElementDB, readElementByName, readElementById, readAllElementsDBMan, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, createMultipleProducts, askQuery, makePurchase, readElementByStock, refillInventory} = require("./utils");
 const inquirer = require("inquirer");
 let choiceArray = [
     "See All Products for Sale", 
@@ -43,7 +43,7 @@ const managerProg = () => {
                 refillInventory();
                 break;
             case "Add New Product(s)":
-                seedDB();
+                createMultipleProducts();
                 break;
             default:
                 console.log("Invalid Request");
