@@ -1,42 +1,46 @@
 # bamazon_db
 MYSQL database Homework
 
-What the project does
+This program manipulates a database, letting you search by name or id, update elements within the database, or add items to the database.
+
+Given additional time, I feel I could create the additional table and get the departments working with overhead cost and profits. I would really like to figure out how to make/maniputate some of these functions so that they could be alterred on the fly instead of having to be re-written with custom changes.
+
+This program was useful for me because it helped show how much easier this whole process would be with a library to more easily manipulate the database.
 
 
 
-Why the project is useful
-
-
-Install the package with `npm install`
-To get started run "bamazon schema.sql" in a sql editor like MySQL Workbench
- in order to create the database and table the app will use. Then use `node app.js`.
- You will be given 2 selections Admin and User:
+//=============User Instructions===========//
+  Install the package with `npm install`
+  To get started run "bamazon schema.sql" in a sql editor like MySQL Workbench
+  in order to create the database and table the app will use. Then use `node app.js`.
+  You will be given 2 selections Manager and Customer:
  Manager Mode {
-   "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading
+   "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading.
 
-    "View Low Inventory": Asks the user what the limit they want to set for their search of low inventory items.
+   "View Low Inventory": Asks the user what the limit they want to set for their search of low inventory items, and then displays all items meeting the condition.
 
-    "Search by Name": 
-    "Add to Inventory": 
-    "Add New Product(s)": 
+   "Search by Name": Takes a user input and finds and displays all records with the matching name. The user input is limited to letters and spaces using a test against a regular expression. If there are multiple records, it asks the user if they want to continue the search, listing the ids in the same order in an inquirer list that the user can then select from.
+
+   "Add to Inventory": Basically uses a modified version of the above name search function. It isolates an item by id and then creates a `Product` object using the paramters from the id search. The user is then prompted to choose how much they want to add to the database (this number is validated in the inquirer prompt). This object then uses its refillStock method to add the user input to its quantity and then updates the database using it's unique id. It will also send the cost of this purchase to the user (planned to use for supervisor mode and manipulating the arbitrary overhead)
+
+   "Add New Product(s)": Uses a function to ask the user how many products the user would like to add. It uses a list to limit the recursion to 10 or less, but could easily be a validated number input if the user wanted to add more products. The user is then asked to input product name, department name (list of 4), price, cost and quantity (the last 3 are validated number inputs). The response data is then used to create a new `Product` object, a unique id (explained more below) is created and attached to the object and then the object is pushed to an array. The recursion counter (set by the user's first input) increments and continues creating objects until it completes the recursion. The array is then passed to a function that creates each item into the database.
  }
  Customer Mode {
+   "See All Products for Sale": Show's all products available for sale, showing their item name, price, and id.
 
+   "Search by Id": Searches for exact matches of id's. (With the id's being as long as they are, this isn't super useful)
+
+   "Search by Name": Takes a user input and finds and displays all records with the matching name. The user input is limited to letters and spaces using a test against a regular expression. If there are multiple records, it asks the user if they want to continue the search, listing the ids in the same order in an inquirer list that the user can then select from.
+   
+   "Make Purchase": Basically uses a modified version of the above name search function. It isolates an item by id and then creates a `Product` object using the paramters from the id search. The user is then prompted to choose how much they want to purchase (this number is validated in the inquirer prompt). This object then uses its makeSale method to subtract the user input to its quantity and then updates the database using it's unique id. It will also send the cost of this purchase to the user (planned to use for supervisor mode and manipulating the product's/department's sales)
+ 
  }
 
+#Unique ID function--->
+This is a function I found through a search of stack overflow. I wanted to give each item a unique id instead of an auto incrementing the id value. This seemed like a good solution (though I don't totally understand everything happening in the function). This did end up making the id's look a bit ugly, but they are generated in a way that they will always be unique. The first thing the function does is create a variable with the current time `d`. It then checks if performance and performance.now are available. Performance.now uses several API's to create a high resolution time object representing the time between the `time origin` and now. The `time origin` is determined a number of ways, but I don't believe it is available through node without additional packages. The function then returns a string of 36 characters (32 characters; 1 "y", 1 "4", and 30 "x"s; seperated by 4 "-"s). As this string is being returned, the replace method is called on all x's and y's in the string (using a regular expression to just select x and y). The replacement characters come from a function called back as part of the replace method. (This is where my understanding gets a little shaky) Variable `r` is then created by adding the date to a random number that is multiplied by 16 and then modulus(ed) by 16 (I believe this gives r a hexidecimal). Variable `d` is then divided by 16 and rounded down. The function then uses a ternary operator to replace any x's with `r` and replaces y with a hexidecimal, and then the whole string is set to a string of 16 hexidecimals, all unique and mostly random. I copied the function in it's entirety including the Public Domain/MIT statement (I hope this is the right way to cite it).
 
 
-
-This program was written by John Blackwell, for an homework assignment for 
-U of R Web Development Bootcamp.
-
-
-
-
-
-
-
+This program was written by John Blackwell, for an homework assignment for U of R Web Development Bootcamp.
 
 
 

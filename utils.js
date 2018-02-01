@@ -436,9 +436,6 @@ const pw = keys.password.pw;
     }
 
 //========================Manager Functions==============================//
-    const checkStock = () => {
-
-    }
 
     const refillInventory = () => {
         inquirer.prompt([{
