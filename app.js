@@ -10,10 +10,10 @@ const app = () => {
             type: "list",
             name: "login",
             message: "How do you want to log in?",
-            choices: ["User", "Admin"]
+            choices: ["Manager", "Customer"]
     }]).then((input) => {
         switch (input.login) {
-            case "User":
+            case "Customer":
                 inquirer.prompt([{
                     type: "input",
                     name: "name",
@@ -22,7 +22,7 @@ const app = () => {
                     customerProg(res.name)
                 })
                 break;
-            case "Admin":
+            case "Manager":
                 managerProg();
                 break;
             default:

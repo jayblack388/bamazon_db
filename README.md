@@ -9,8 +9,21 @@ Why the project is useful
 
 
 Install the package with `npm install`
-To get started open the folder and run "bamazon schema.sql" in a sql editor like 
-MySQL Workbench in order to create the database and table the app will use.
+To get started run "bamazon schema.sql" in a sql editor like MySQL Workbench
+ in order to create the database and table the app will use. Then use `node app.js`.
+ You will be given 2 selections Admin and User:
+ Manager Mode {
+   "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading
+
+    "View Low Inventory": Asks the user what the limit they want to set for their search of low inventory items.
+
+    "Search by Name": 
+    "Add to Inventory": 
+    "Add New Product(s)": 
+ }
+ Customer Mode {
+
+ }
 
 
 
