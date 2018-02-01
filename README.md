@@ -10,12 +10,11 @@ This program was useful for me because it helped show how much easier this whole
 
 
 //=============User Instructions===========//
-  Install the package with `npm install`
-  To get started run "bamazon schema.sql" in a sql editor like MySQL Workbench
-  in order to create the database and table the app will use. Then use `node app.js`.
-  You will be given 2 selections Manager and Customer:
+  Install the package with `npm install`. To get started use `node dbInit.js` to create and seed the database (Known Issue, connection stays open after seeding database). Optionally, you can run "bamazon schema.sql" in a sql editor like MySQL Workbench in order to create the database and table the app will use, and then add products in manager mode. You will need to create a ".env" file that stores your database connection's password. The format for the ".env" file is shown in "envformat.jpg". Then use `node app.js`.
+
+You will be given 2 selections Manager and Customer:
  Manager Mode {
-   "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading.
+   "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading, these results are ordered by stock in descending order.
 
    "View Low Inventory": Asks the user what the limit they want to set for their search of low inventory items, and then displays all items meeting the condition.
 
@@ -26,7 +25,7 @@ This program was useful for me because it helped show how much easier this whole
    "Add New Product(s)": Uses a function to ask the user how many products the user would like to add. It uses a list to limit the recursion to 10 or less, but could easily be a validated number input if the user wanted to add more products. The user is then asked to input product name, department name (list of 4), price, cost and quantity (the last 3 are validated number inputs). The response data is then used to create a new `Product` object, a unique id (explained more below) is created and attached to the object and then the object is pushed to an array. The recursion counter (set by the user's first input) increments and continues creating objects until it completes the recursion. The array is then passed to a function that creates each item into the database.
  }
  Customer Mode {
-   "See All Products for Sale": Show's all products available for sale, showing their item name, price, and id.
+   "See All Products for Sale": Show's all products available for sale, showing their item name, price, and id, these results are listed from least to most expensive.
 
    "Search by Id": Searches for exact matches of id's. (With the id's being as long as they are, this isn't super useful)
 

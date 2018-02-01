@@ -1,9 +1,9 @@
 require('dotenv').config();
+const keys = require("./keys");
+const pw = keys.password.pw;
 const Product = require("./classes/products");
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const keys = require("./keys");
-const pw = keys.password.pw;
 const fs = require("fs");
 
 //========================Server Variables==============================//
@@ -17,6 +17,7 @@ const fs = require("fs");
         password: pw,
         database: "bamazon"
     });
+
 
     const testConnect = (optCallback = 0) => {
         con.connect((err)=>{
@@ -88,7 +89,7 @@ const fs = require("fs");
                 newProd.id = generateUUID();
                 newArr.push(newProd);
             }
-            createElementDB(newArr);
+            console.log(newArr);
         })
     }
 //========================CRUD==============================//
@@ -101,11 +102,7 @@ const fs = require("fs");
                 if (err) throw err;
                 console.log(`Inserting a new product...\n`);
                 console.log(res.affectedRows + " products added!")
-                if (optCallback) {
-                    optCallback()
-                } else {
-                    con.end();
-                }
+                con.end();
             });
         }); 
     };
@@ -178,7 +175,7 @@ const fs = require("fs");
 
         const readAllElementsDB = (optCallback = 0) => {
             console.log("Selecting all products...\n");
-            con.query("SELECT item_id, product_name, price FROM products", (err, res)=>{
+            con.query("SELECT item_id, product_name, price FROM products ORDER BY price ASC", (err, res)=>{
                 if (err) throw err;
                 for (let i = 0; i < res.length; i ++) {
                     console.log(`Name: ${res[i].product_name} || Price: ${res[i].price} || ID: ${res[i].item_id}`);
@@ -189,7 +186,7 @@ const fs = require("fs");
 
         const readAllElementsDBMan = (optCallback = 0) => {
             console.log("Selecting all products...\n");
-            con.query("SELECT * FROM products", (err, res)=>{
+            con.query("SELECT * FROM products ORDER BY stock_quantity DESC", (err, res)=>{
                 if (err) throw err;
                 for (let i = 0; i < res.length; i ++) {
                     console.log(`ID: ${res[i].item_id}\nName: ${res[i].product_name} || Price: ${res[i].price} || Cost ${res[i].cost} || QTY: ${res[i].stock_quantity}\n`);
