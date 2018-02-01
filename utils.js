@@ -17,11 +17,15 @@ const pw = keys.password.pw;
         database: "bamazon"
     });
 
-    const testConnect = () => {
+    const testConnect = (optCallback = 0) => {
         con.connect((err)=>{
             if (err) throw err;
             console.log("connected as id " + con.threadId);
-            con.end();
+            if (optCallback) {
+                optCallback()
+            } else {
+                con.end();
+            }
         });
     };
 //========================General Utils==============================//
@@ -63,9 +67,15 @@ const pw = keys.password.pw;
         })
     }
 
+    const recreateProduct = (id, name, depName, price, cost, quantity) => {
+        let newProd = new Product(name, depName, price, cost, quantity);
+        newProd.id = id;
+        return newProd;
+    }
+
 //========================CRUD==============================//
 
-    const createElementDB = (valueArr) => {
+    const createElementDB = (valueArr,  optCallback = 0) => {
         con.connect((err)=>{
             if (err) throw err;
             let sql = "INSERT INTO products (item_id, product_name, department_name, price, cost, stock_quantity) VALUES ?";
@@ -73,13 +83,17 @@ const pw = keys.password.pw;
                 if (err) throw err;
                 console.log(`Inserting a new product...\n`);
                 console.log(res.affectedRows + " products added!")
-                con.end();
+                if (optCallback) {
+                    optCallback()
+                } else {
+                    con.end();
+                }
             });
         }); 
     };
     //========================Read==============================//
 
-        const readElementByName = (input) => {
+        const readElementByName = (input, optCallback = 0) => {
             con.connect((err)=>{
                 if (err) throw err;
                 console.log(`Selecting ${input}...\n`);
@@ -106,46 +120,68 @@ const pw = keys.password.pw;
                         }]).then((input)=>{
                             if (input.idConfirm) {
                                 askQueryList(resArr, readElementById);
-                            }else {
+                            } else {
                                 con.end();
                             }
                         })
                     } else {
                         console.log(`Name: ${res[0].product_name} || Price: ${res[0].price} ||ID: ${res[0].item_id}`);
-
+                        con.end();
                     }
                 })
             });
         };
 
         const readElementById = (input) => {
-                console.log(`Selecting ${input}...\n`);
-                let where = {item_id: input};
-                let sql = "SELECT item_id, product_name, price FROM products WHERE ?";
-                sql = mysql.format(sql, where);
-                con.query({sql}, (err, res)=>{
-                    if (err) throw err;
-                    console.log(`Name: ${res[0].product_name} || Price: ${res[0].price} ||ID: ${res[0].item_id}`);
-                    con.end();
-                })
+            console.log(`Selecting ${input}...\n`);
+            let where = {item_id: input};
+            let sql = "SELECT item_id, product_name, price FROM products WHERE ?";
+            sql = mysql.format(sql, where);
+            con.query({sql}, (err, res)=>{
+                if (err) throw err;
+                console.log(`Name: ${res[0].product_name} || Price: ${res[0].price} || ID: ${res[0].item_id}`);
+                con.end();
+            })
         };
 
-        const readAllElementsDB = () => {
-            con.connect((err)=>{
+        const readElementByStock = (input) => {
+            console.log(`Selecting products with quantity less than ${input}...\n`);
+            let where = input;
+            let sql = "SELECT * FROM products WHERE stock_quantity < ? ORDER BY stock_quantity DESC";
+            sql = mysql.format(sql, where);
+            con.query({sql}, (err, res)=>{
                 if (err) throw err;
-                console.log("Selecting all products...\n");
-                con.query("SELECT item_id, product_name, price FROM products", (err, res)=>{
-                    if (err) throw err;
-                    for (let i = 0; i < res.length; i ++) {
-                        console.log(`Name: ${res[i].product_name} || Price: ${res[i].price} ||ID: ${res[i].item_id}`);
-                    }
-                    con.end();
-                })
-            });
+                for (let i = 0; i < res.length; i ++) {
+                    console.log(`ID: ${res[i].item_id}\nName: ${res[i].product_name} || Price: ${res[i].price} || Cost ${res[i].cost} || QTY: ${res[i].stock_quantity}\n`);
+                }
+                con.end()
+            })
+        };
+
+        const readAllElementsDB = (optCallback = 0) => {
+            console.log("Selecting all products...\n");
+            con.query("SELECT item_id, product_name, price FROM products", (err, res)=>{
+                if (err) throw err;
+                for (let i = 0; i < res.length; i ++) {
+                    console.log(`Name: ${res[i].product_name} || Price: ${res[i].price} || ID: ${res[i].item_id}`);
+                }
+                con.end();
+            })
+        };
+
+        const readAllElementsDBMan = (optCallback = 0) => {
+            console.log("Selecting all products...\n");
+            con.query("SELECT * FROM products", (err, res)=>{
+                if (err) throw err;
+                for (let i = 0; i < res.length; i ++) {
+                    console.log(`ID: ${res[i].item_id}\nName: ${res[i].product_name} || Price: ${res[i].price} || Cost ${res[i].cost} || QTY: ${res[i].stock_quantity}\n`);
+                }
+                con.end();
+            })
         };
     //========================Update==============================//
 
-        const updateElementByName = (newName, oldName) => {
+        const updateElementByName = (newName, oldName, optCallback = 0) => {
             con.connect((err)=>{
                 if (err) throw err;
                 let set = {product_name:newName};
@@ -157,12 +193,16 @@ const pw = keys.password.pw;
                     if (err) throw err;
                     console.log(`Updating ${oldName}...\n`);
                     console.log(res.affectedRows + " products updated!")
-                    con.end();
+                    if (optCallback) {
+                        optCallback()
+                    } else {
+                        con.end();
+                    }
                 })
             });
         };
 
-        const updateElementById = (newName, id) => {
+        const updateElementById = (newName, id, optCallback = 0) => {
             con.connect((err)=>{
                 if (err) throw err;
                 let set = {product_name: newName};
@@ -174,13 +214,30 @@ const pw = keys.password.pw;
                     if (err) throw err;
                     console.log(`Updating ${id}...\n`);
                     console.log(res.affectedRows + " products updated!")
-                    con.end();
+                    if (optCallback) {
+                        optCallback()
+                    } else {
+                        con.end();
+                    }
                 })
             });
         };
-        
 
-    const deleteElementDB = (inputId) => {
+        const updateElementQty = (newQty, id) => {
+            let set = {stock_quantity: newQty};
+            let where = {item_id: id};
+            let sql = "UPDATE products SET ? WHERE ?";
+            let inserts = [set, where];
+            sql = mysql.format(sql, inserts);
+            con.query({sql}, (err, res)=>{
+                if (err) throw err;
+                console.log(`Updating ${id}...\n`);
+                con.end();
+            })
+        };
+
+
+    const deleteElementDB = (inputId, optCallback = 0) => {
         con.connect((err)=>{
             if (err) throw err;
             let sql = "DELETE FROM products WHERE ?";
@@ -191,7 +248,11 @@ const pw = keys.password.pw;
                 if (res.affectedRows > 0) {
                     console.log(`Deleting ${inputId}\n`);
                     console.log(res.affectedRows + " products deleted!")
-                    con.end();
+                    if (optCallback) {
+                        optCallback()
+                    } else {
+                        con.end();
+                    }
                 } else {
                     console.log("Item ID not found");
                     con.end();
@@ -201,9 +262,6 @@ const pw = keys.password.pw;
     };
 
 //========================Inquirer Prompts for CRUDing Products==============================//
-    const makePurchase = () => {
-
-    }
 
     const createProduct = () => {
         if (count < userIn) {
@@ -269,7 +327,7 @@ const pw = keys.password.pw;
     const seedDB = () => {
         inquirer.prompt([{
             type: "list",
-            message: "How Many Seeds Do you want to create?",
+            message: "How Many products Do you want to create?",
             name: "n",
             choices: ["1","2","3","5","10"]
         }]).then((res)=>{
@@ -279,9 +337,198 @@ const pw = keys.password.pw;
         })  
     }
 
+//========================Customer Functions==============================//
+    //Without question the ugliest function I've had to write
+    const makePurchase = () => {
+        inquirer.prompt([{
+            type: "input",
+            name: "purchaseId",
+            message: "What do you want to buy?"
+        }]).then ((response) => {
+            con.connect((err)=>{
+                if (err) throw err;
+                console.log(`Selecting ${response.purchaseId}...\n`);
+                let re = /^[a-zA-Z\s]*$/;
+                let value;
+                if (re.test(response.purchaseId)) {
+                    value = {product_name: response.purchaseId};
+                } else {
+                    console.log("Please just use alphabetical characters.")
+                }
+                let sql = "SELECT * FROM products WHERE ?";
+                con.query(sql, value, (err, res)=>{
+                    if (err) throw err;
+                    if (res.length > 1) {
+                        let resArr = [];
+                        for (let i = 0; i < res.length; i ++) {
+                            console.log(`Name: ${res[i].product_name} || Price: ${res[i].price} ||ID: ${res[i].item_id}`);
+                            resArr.push(res[i].item_id);
+                        }
+                        inquirer.prompt([{
+                            type: "confirm",
+                            message: "Would you like to narrow that down with an ID search?",
+                            name: "idConfirm"
+                        }]).then((childRes) => {
+                            askQueryList(resArr, (input) => {
+                                console.log(`Selecting ${input}...\n`);
+                                let where = {item_id: input};
+                                let sql = "SELECT * FROM products WHERE ?";
+                                sql = mysql.format(sql, where);
+                                con.query({sql}, (err, gCRes)=>{
+                                    if (err) throw err;
+                                    console.log(`Name: ${gCRes[0].product_name} || Price: ${gCRes[0].price} ||ID: ${gCRes[0].item_id}`);
+                                    let newProd = recreateProduct(gCRes[0].item_id, gCRes[0].product_name, gCRes[0].department_name, gCRes[0].price, gCRes[0].cost, gCRes[0].stock_quantity);
+                                    inquirer.prompt([{
+                                        type: "input",
+                                        name: "saleQty",
+                                        message: "How many do you want to buy?",
+                                        validate: (value)=> {
+                                            if (isNaN(value) === false) {
+                                                return true;
+                                            } else {
+                                                return "Enter Valid Quantity";
+                                            }
+                                        }  
+                                    }]).then((saleRes)=>{
+                                        let qty = parseInt(saleRes.saleQty);
+                                        if (newProd.quantity > qty) {
+                                            newProd.makeSale(qty);
+                                            updateElementQty(newProd.quantity, newProd.id)
+                                            console.log(saleRes.saleQty + " products purchased!")
+                                            console.log(`Your price is $` + (newProd.price * qty));
+                                        } else {
+                                            console.log("Insufficient Stock")
+                                            con.end();
+                                        }
+                                    })
+                                })
+                            })
+                        })
+                    } else {
+                        console.log(`Name: ${res[0].product_name} || Price: ${res[0].price} ||ID: ${res[0].item_id}`);
+                        let newProd = recreateProduct(res[0].item_id, res[0].product_name, res[0].department_name, res[0].price, res[0].cost, res[0].stock_quantity);
+                        inquirer.prompt([{
+                            type: "input",
+                            name: "saleQty",
+                            message: "How many do you want to buy?",
+                            validate: (value)=> {
+                                if (isNaN(value) === false) {
+                                    return true;
+                                } else {
+                                    return "Enter Valid Quantity";
+                                }
+                            }  
+                        }]).then((saleRes)=>{
+                            let qty = parseInt(saleRes.saleQty);
+                            if (newProd.quantity > qty) {
+                                newProd.makeSale(qty);
+                                updateElementQty(newProd.quantity, newProd.id)
+                                console.log(saleRes.saleQty + " products purchased!");
+                                console.log(`Your price is $` + (newProd.price * qty))
+                            } else {
+                                console.log("Insufficient Stock")
+                            }
+                        })
+                    }
+                })
+            });
+        })
+    }
+
+//========================Manager Functions==============================//
+    const checkStock = () => {
+
+    }
+
+    const refillInventory = () => {
+        inquirer.prompt([{
+            type: "input",
+            name: "purchaseId",
+            message: "What do you want to add to the inventory?"
+        }]).then ((response) => {
+            con.connect((err)=>{
+                if (err) throw err;
+                console.log(`Selecting ${response.purchaseId}...\n`);
+                let re = /^[a-zA-Z\s]*$/;
+                let value;
+                if (re.test(response.purchaseId)) {
+                    value = {product_name: response.purchaseId};
+                } else {
+                    console.log("Please just use alphabetical characters.")
+                }
+                let sql = "SELECT * FROM products WHERE ?";
+                con.query(sql, value, (err, res)=>{
+                    if (err) throw err;
+                    if (res.length > 1) {
+                        let resArr = [];
+                        for (let i = 0; i < res.length; i ++) {
+                            console.log(`Name: ${res[i].product_name} || Cost: ${res[i].cost} || ID: ${res[i].item_id} || QTY: ${res[i].stock_quantity}`);
+                            resArr.push(res[i].item_id);
+                        }
+                        inquirer.prompt([{
+                            type: "confirm",
+                            message: "Would you like to narrow that down with an ID search?",
+                            name: "idConfirm"
+                        }]).then((childRes) => {
+                            askQueryList(resArr, (input) => {
+                                console.log(`Selecting ${input}...\n`);
+                                let where = {item_id: input};
+                                let sql = "SELECT * FROM products WHERE ?";
+                                sql = mysql.format(sql, where);
+                                con.query({sql}, (err, gCRes)=>{
+                                    if (err) throw err;
+                                    console.log(`Name: ${gCRes[0].product_name} || Price: ${gCRes[0].price} || ID: ${gCRes[0].item_id} || QTY: ${gCRes[0].stock_quantity}`);
+                                    let newProd = recreateProduct(gCRes[0].item_id, gCRes[0].product_name, gCRes[0].department_name, gCRes[0].price, gCRes[0].cost, gCRes[0].stock_quantity);
+                                    inquirer.prompt([{
+                                        type: "input",
+                                        name: "saleQty",
+                                        message: "How many do you want to buy?",
+                                        validate: (value)=> {
+                                            if (isNaN(value) === false) {
+                                                return true;
+                                            } else {
+                                                return "Enter Valid Quantity";
+                                            }
+                                        }  
+                                    }]).then((saleRes)=>{
+                                        let qty = parseInt(saleRes.saleQty);
+                                        newProd.refillStock(qty);
+                                        updateElementQty(newProd.quantity, newProd.id)
+                                        console.log(saleRes.saleQty + " products purchased!")
+                                        console.log(`Purchase cost is $` + (newProd.cost * qty));
+                                    })
+                                })
+                            })
+                        })
+                    } else {
+                        console.log(`Name: ${res[0].product_name} || Cost: ${res[0].cost} || ID: ${res[0].item_id} || QTY ${res[0].stock_quantity}`);
+                        let newProd = recreateProduct(res[0].item_id, res[0].product_name, res[0].department_name, res[0].price, res[0].cost, res[0].stock_quantity);
+                        inquirer.prompt([{
+                            type: "input",
+                            name: "saleQty",
+                            message: "How many do you want to buy?",
+                            validate: (value)=> {
+                                if (isNaN(value) === false) {
+                                    return true;
+                                } else {
+                                    return "Enter Valid Quantity";
+                                }
+                            }  
+                        }]).then((saleRes)=>{
+                            let qty = parseInt(saleRes.saleQty);
+                            newProd.refillStock(qty);
+                            updateElementQty(newProd.quantity, newProd.id)
+                            console.log(saleRes.saleQty + " products purchased!")
+                            console.log(`Purchase cost is $` + (newProd.cost * qty));
+                        })
+                    }
+                })
+            });
+        })
+    }
 //========================Test==============================//
-
-
+// makePurchase();
+// testConnect();
 // createElementDB();
 // readElementByName("Soap");
 // readAllElementsDB();
@@ -296,5 +543,5 @@ const pw = keys.password.pw;
 // seedDB();
 
 module.exports = {
-    con, createElementDB, readElementByName, readElementById, readAllElementsDB, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase
+    con, createElementDB, readElementByName, readElementById, readAllElementsDB, readAllElementsDBMan, updateElementByName, updateElementById, deleteElementDB, generateUUID, createProduct, seedDB, askQuery, makePurchase, readElementByStock, refillInventory
 }

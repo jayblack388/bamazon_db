@@ -8,6 +8,7 @@ class Product {
         this.quantity = quantity;
         this._sale = false;
         this.saleRate;
+        this.product_sales;
     }
     set price(newPrice) {
         if (typeof newPrice === 'number'){
