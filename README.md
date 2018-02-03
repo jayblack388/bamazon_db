@@ -20,6 +20,7 @@ You will be given 2 selections Manager and Customer:
 
 
  Manager Mode {
+
    "See All Products for Sale": Show's all products available for sale, showing their item id, name, price, cost, and quantity and breaks a line for easier reading, these results are ordered by stock in descending order.
 
    "View Low Inventory": Asks the user what the limit they want to set for their search of low inventory items, and then displays all items meeting the condition.
@@ -35,6 +36,7 @@ You will be given 2 selections Manager and Customer:
 
 
  Customer Mode {
+   
    "See All Products for Sale": Show's all products available for sale, showing their item name, price, and id, these results are listed from least to most expensive.
 
    "Search by Id": Searches for exact matches of id's. (With the id's being as long as they are, this isn't super useful)
